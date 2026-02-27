@@ -3,30 +3,26 @@ extends CharacterBody2D
 @export var gravity = 1000.0
 @export var walk_speed = 200
 @export var jump_speed = -500
+@export var fall_limit = 675.0
+@export var max_jumps = 2
+@export var dash_speed = 450
+@export var dash_duration = 0.2
+@export var double_tap_time = 0.25
+@export var crouch_speed = 100
+
+var spawn_position = Vector2.ZERO
+var jump_count = 0
+var dash_timer = 0.0
+var is_dashing = false
+var time_since_last_tap = 0.0
+var last_tap_dir = ""
+var is_crouching = false
 
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var collision_stand = $CollisionStand
 @onready var collision_crouch = $CollisionCrouch
 @onready var ceiling_check_left = $CeilingCheckLeft
 @onready var ceiling_check_right = $CeilingCheckRight
-
-@export var fall_limit = 675.0
-var spawn_position = Vector2.ZERO
-
-@export var max_jumps = 2
-var jump_count = 0
-
-@export var dash_speed = 450
-@export var dash_duration = 0.2
-@export var double_tap_time = 0.25
-
-var dash_timer = 0.0
-var is_dashing = false
-var time_since_last_tap = 0.0
-var last_tap_dir = ""
-
-@export var crouch_speed = 100
-var is_crouching = false
 
 
 func _ready():
