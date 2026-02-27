@@ -5,12 +5,12 @@ extends CharacterBody2D
 @export var jump_speed = -500
 
 @onready var animated_sprite = $AnimatedSprite2D
-@onready var collision_stand = $CollisionStand   
-@onready var collision_crouch = $CollisionCrouch 
+@onready var collision_stand = $CollisionStand
+@onready var collision_crouch = $CollisionCrouch
 @onready var ceiling_check_left = $CeilingCheckLeft
 @onready var ceiling_check_right = $CeilingCheckRight
 
-@export var fall_limit = 675.0 
+@export var fall_limit = 675.0
 var spawn_position = Vector2.ZERO
 
 @export var max_jumps = 2
@@ -25,11 +25,13 @@ var is_dashing = false
 var time_since_last_tap = 0.0
 var last_tap_dir = ""
 
-@export var crouch_speed = 100 
+@export var crouch_speed = 100
 var is_crouching = false
+
 
 func _ready():
 	spawn_position = global_position
+
 
 func _physics_process(delta):
 	if global_position.y > fall_limit:
@@ -47,22 +49,22 @@ func _physics_process(delta):
 		is_crouching = false
 
 	if is_crouching:
-		collision_stand.disabled = true   
-		collision_crouch.disabled = false 
+		collision_stand.disabled = true
+		collision_crouch.disabled = false
 	else:
-		collision_stand.disabled = false  
-		collision_crouch.disabled = true  
+		collision_stand.disabled = false
+		collision_crouch.disabled = true
 
 	if is_on_floor():
-		jump_count = 0 
+		jump_count = 0
 
-	if Input.is_action_just_pressed('ui_up') and not is_crouching:
+	if Input.is_action_just_pressed("ui_up") and not is_crouching:
 		if is_on_floor() or jump_count < max_jumps:
 			velocity.y = jump_speed
 			jump_count += 1
 
-	time_since_last_tap += delta 
-	
+	time_since_last_tap += delta
+
 	if is_dashing:
 		dash_timer -= delta
 		if dash_timer <= 0:
@@ -75,7 +77,7 @@ func _physics_process(delta):
 			_check_dash("right")
 
 	var current_speed = walk_speed
-	
+
 	if is_dashing:
 		current_speed = dash_speed
 	elif is_crouching:
@@ -91,34 +93,37 @@ func _physics_process(delta):
 	move_and_slide()
 	_update_animation()
 
+
 func _respawn():
-	global_position = spawn_position 
-	velocity = Vector2.ZERO          
+	global_position = spawn_position
+	velocity = Vector2.ZERO
+
 
 func _check_dash(dir: String):
 	if last_tap_dir == dir and time_since_last_tap <= double_tap_time:
 		is_dashing = true
 		dash_timer = dash_duration
-	
+
 	last_tap_dir = dir
 	time_since_last_tap = 0.0
+
 
 func _update_animation():
 	if velocity.x > 0:
 		animated_sprite.flip_h = false
 	elif velocity.x < 0:
-		animated_sprite.flip_h = true 
-		
+		animated_sprite.flip_h = true
+
 	if not is_on_floor():
 		if velocity.y < 0:
-			animated_sprite.play("jump") 
+			animated_sprite.play("jump")
 		else:
-			animated_sprite.play("fall") 
+			animated_sprite.play("fall")
 	elif is_crouching:
-		animated_sprite.play("crouch")   
+		animated_sprite.play("crouch")
 	elif is_dashing:
-		animated_sprite.play("dash")     
+		animated_sprite.play("dash")
 	elif velocity.x != 0:
-		animated_sprite.play("walk")     
+		animated_sprite.play("walk")
 	else:
 		animated_sprite.play("idle")
